@@ -54,6 +54,7 @@ public class SignallingClient {
 
             socket.connect();
         }
+        socket.connect();
 
         ListenToMsg();
     }
