@@ -70,9 +70,7 @@ public class SignallingClient {
         sslcontext.init(null, trustAllCerts, null);
         IO.setDefaultHostnameVerifier((hostname, session) -> true);
         IO.setDefaultSSLContext(sslcontext);
-        //set the socket.io url here http://sicket.log-apps.com/
-//            socket = IO.socket("https://85.10.200.252:8001");
-        //  socket = IO.socket("https://c-box.live:5050");
+
 
         //ToDO : emit for data
 
