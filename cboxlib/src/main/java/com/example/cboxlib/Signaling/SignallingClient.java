@@ -1,6 +1,7 @@
 package com.example.cboxlib.Signaling;
 
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -10,6 +11,13 @@ import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 
 import java.net.URISyntaxException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 /**
  *
@@ -24,6 +32,20 @@ public class SignallingClient {
    private Context mContext;
    public static Socket socket;
 
+    @SuppressLint("TrustAllX509TrustManager")
+    private final TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
+        public X509Certificate[] getAcceptedIssuers() {
+            return new X509Certificate[]{};
+        }
+
+        public void checkClientTrusted(X509Certificate[] chain,
+                                       String authType) {
+        }
+
+        public void checkServerTrusted(X509Certificate[] chain,
+                                       String authType) {
+        }
+    }};
 
     /**
      *
@@ -33,7 +55,7 @@ public class SignallingClient {
      * @param name
      * @param signalingInterface
      */
-    public void init(Context mContext ,String roomName ,int LoginID ,String name ,SignalingInterface signalingInterface) throws URISyntaxException {
+    public void init(Context mContext ,String roomName ,int LoginID ,String name ,SignalingInterface signalingInterface) throws URISyntaxException, NoSuchAlgorithmException, KeyManagementException {
         this.callback = signalingInterface;
         this.roomName = roomName;
         this.ID = LoginID;
@@ -44,16 +66,29 @@ public class SignallingClient {
 
 
 
-        //TODO : Initlize for Socket To connect To Server
+        SSLContext sslcontext = SSLContext.getInstance("TLS");
+        sslcontext.init(null, trustAllCerts, null);
+        IO.setDefaultHostnameVerifier((hostname, session) -> true);
+        IO.setDefaultSSLContext(sslcontext);
+        //set the socket.io url here http://sicket.log-apps.com/
+//            socket = IO.socket("https://85.10.200.252:8001");
+        //  socket = IO.socket("https://c-box.live:5050");
+
+        //ToDO : emit for data
+
+        Log.e("rrom", roomName);
         StringBuilder query =
                 new StringBuilder("user_id=" + ID + "&username=" + name + "&room=" + roomName + "&url=" + "https://c-box.live:5000" + "&title=" + "my title" + "&type=" + 1);
+
         result = query.toString();
         options.query = result;
+
         socket = IO.socket("https://c-box.live:5050", options);
         if (!socket.connected()) {
 
             socket.connect();
         }
+
         socket.connect();
 
         ListenToMsg();
@@ -64,11 +99,7 @@ public class SignallingClient {
         //ToDo:Listen to msg
         socket.on("listenMessage", args -> {
 
-            Log.e("msg",args[0].toString());
-            Log.e("name",args[1].toString());
-            Log.e("type",args[2].toString());
-            Log.e("visitorid",args[3].toString());
-            Log.e("notyid",args[4].toString());
+
             callback.Onmsgrecieved(args[0].toString(),args[1].toString() ,args[2].toString(),args[3].toString(),args[4].toString());
 
         });

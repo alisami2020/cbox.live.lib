@@ -11,6 +11,8 @@ import com.example.cboxlib.Signaling.SignallingClient;
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 
 public class MainActivity extends AppCompatActivity implements SignalingInterface {
 
@@ -24,6 +26,10 @@ public class MainActivity extends AppCompatActivity implements SignalingInterfac
         try {
             signallingClient.init(getApplicationContext(),"logappshosting",1,"admin",this);
         } catch (URISyntaxException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (KeyManagementException e) {
             e.printStackTrace();
         }
 
@@ -93,7 +99,13 @@ public class MainActivity extends AppCompatActivity implements SignalingInterfac
     @Override
     public void Onmsgrecieved(String message, String name, String type, String Vidsitor_id, String Notification_id) {
 
-        Toast.makeText(getApplicationContext(),message,Toast.LENGTH_LONG).show();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getApplicationContext(),message,Toast.LENGTH_LONG).show();
+
+            }
+        });
     }
 
     @Override
