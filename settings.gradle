@@ -1,0 +1,2 @@
+include ':app', ':cboxlib'
+rootProject.name='cbox.live.lib'
