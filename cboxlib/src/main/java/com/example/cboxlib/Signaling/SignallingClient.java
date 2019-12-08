@@ -29,14 +29,14 @@ public class SignallingClient {
      *
      * @param mContext
      * @param roomName
-     * @param ID
+     * @param LoginID
      * @param name
      * @param signalingInterface
      */
-    public void init(Context mContext ,String roomName ,int ID ,String name ,SignalingInterface signalingInterface) throws URISyntaxException {
+    public void init(Context mContext ,String roomName ,int LoginID ,String name ,SignalingInterface signalingInterface) throws URISyntaxException {
         this.callback = signalingInterface;
         this.roomName = roomName;
-        this.ID = ID;
+        this.ID = LoginID;
         this.mContext = mContext;
         this.name = name;
         IO.Options options = new IO.Options();
